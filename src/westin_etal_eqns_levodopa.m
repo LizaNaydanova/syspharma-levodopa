@@ -21,7 +21,7 @@ function dydt = westin_etal_eqns_levodopa(t,y,p)
 dydt = zeros(5,1);    % make it a column vector (e.g. (3,1))
 
 % List of equations. Equation (1) is the ODE associated with the
-% concentration of molecule (1); but note that each equation might depend
+% amount of levodopa (1); but note that each equation might depend
 % on the concentrations of multiple molecules. This is what makes these
 % 'coupled ODEs'
 dydt(1) = p.inf - p.ka*y(1);                                      % a0
