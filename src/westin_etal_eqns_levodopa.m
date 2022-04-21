@@ -29,6 +29,6 @@ dydt(2) = p.BIO*p.ka*y(1) - ((p.Q/p.V1)+(p.CL/p.V1))*y(2) +...    % a1
     (p.Q/p.V2)*y(3) + p.R_SYN; 
 dydt(3) = (p.Q/p.V1)*y(2) - (p.Q/p.V2)*y(3);                      % a2
 dydt(4) = p.k_EO*((y(2)/p.V1) - y(4));                            % c_e
-dydt(5) = p.CL*y(1)/p.V1;                                         % CL
+dydt(5) = p.CL*y(2)/p.V1;                                         % CL %uses a1 not a0 
 
 
