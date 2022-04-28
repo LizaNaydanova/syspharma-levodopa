@@ -18,11 +18,11 @@ Q_expon  = 0.75;
 
 %%% Generate new virtual population
 NumberOfSubjects = 500;
-mean = 75.4;
+param_mean = 75.4;
 sd   = 11.3;
 cutoff = 30;
 str = 'WeightDistribs_';
-Assignment4Starter2022(NumberOfSubjects, mean, sd, cutoff, str);
+Assignment4Starter2022(NumberOfSubjects, param_mean, sd, cutoff, str);
 Weights_output = load(strcat(str,string(NumberOfSubjects),'.mat'),'patientID','Param_Val');
 Weights = Weights_output.Param_Val;
 
@@ -53,30 +53,30 @@ AUC_peripheral_arr3 = zeros(NumberOfSubjects, 1);
 AUC_peripheral_arr4 = zeros(NumberOfSubjects, 1);
 AUC_peripheral_arr5 = zeros(NumberOfSubjects, 1);
 
-for i = 1:NumberOfSubjects
-    [AUC_central1,AUC_peripheral1] = levodopa(CL_samp(i),Vc,Vp,Q,D0);
-    [AUC_central2,AUC_peripheral2] = levodopa(CL,Vc_samp(i),Vp,Q,D0);
-    [AUC_central3,AUC_peripheral3] = levodopa(CL,Vc,Vp_samp(i),Q,D0);
-    [AUC_central4,AUC_peripheral4] = levodopa(CL,Vc,Vp,Q_samp(i),D0);
-    [AUC_central5,AUC_peripheral5] = levodopa(CL_samp(i),Vc_samp(i),Vp_samp(i),Q_samp(i),D0);
-    
-    AUC_central_arr1(i) = AUC_central1;
-    AUC_central_arr2(i) = AUC_central2;
-    AUC_central_arr3(i) = AUC_central3;
-    AUC_central_arr4(i) = AUC_central4;
-    AUC_central_arr5(i) = AUC_central5;
-    AUC_peripheral_arr1(i) = AUC_peripheral1;
-    AUC_peripheral_arr2(i) = AUC_peripheral2;
-    AUC_peripheral_arr3(i) = AUC_peripheral3;
-    AUC_peripheral_arr4(i) = AUC_peripheral4;
-    AUC_peripheral_arr5(i) = AUC_peripheral5;
-    
-end
+% for i = 1:NumberOfSubjects
+%     [AUC_central1,AUC_peripheral1] = levodopa(CL_samp(i),Vc,Vp,Q,D0);
+%     [AUC_central2,AUC_peripheral2] = levodopa(CL,Vc_samp(i),Vp,Q,D0);
+%     [AUC_central3,AUC_peripheral3] = levodopa(CL,Vc,Vp_samp(i),Q,D0);
+%     [AUC_central4,AUC_peripheral4] = levodopa(CL,Vc,Vp,Q_samp(i),D0);
+%     [AUC_central5,AUC_peripheral5] = levodopa(CL_samp(i),Vc_samp(i),Vp_samp(i),Q_samp(i),D0);
+%     
+%     AUC_central_arr1(i) = AUC_central1;
+%     AUC_central_arr2(i) = AUC_central2;
+%     AUC_central_arr3(i) = AUC_central3;
+%     AUC_central_arr4(i) = AUC_central4;
+%     AUC_central_arr5(i) = AUC_central5;
+%     AUC_peripheral_arr1(i) = AUC_peripheral1;
+%     AUC_peripheral_arr2(i) = AUC_peripheral2;
+%     AUC_peripheral_arr3(i) = AUC_peripheral3;
+%     AUC_peripheral_arr4(i) = AUC_peripheral4;
+%     AUC_peripheral_arr5(i) = AUC_peripheral5;
+%     
+% end
 
 
 %%%%% Part 2: Run the Levodopa Model on Simulated PopPD Parameters %%%%%
 %% Effect on a TRS scale
-[~,~,c_e]  = levodopa(CL,Vc,Vp,Q,D0);    % units: mg/L
+[~,~,c_e, T]  = levodopa(CL,Vc,Vp,Q,D0);    % units: mg/L
 
 BASE = -1.58;    % units: TRS
 E_max = 2.39;    % units: TRS
@@ -85,7 +85,7 @@ gamma = 11.6;    % units: sigmoidicity
 
 %% Simulate 500 Patients
 EC50_sd  = 0.5;
-gamma_sd = 2;
+gamma_sd = 5;
 cutoff = 0;
 Assignment4Starter2022(NumberOfSubjects, EC_50, EC50_sd, cutoff,'EC50Distribs_');
 Assignment4Starter2022(NumberOfSubjects, gamma, gamma_sd, cutoff,'GammaDistribs_');
@@ -95,17 +95,17 @@ EC50s = EC50s_out.Param_Val;
 Gammas = Gammas_out.Param_Val;
 
 E_norm = BASE + (E_max*c_e.^gamma)./(c_e.^gamma + EC_50^gamma);
-E_EC50 = zeros(NumberOfSubjects,length(E_norm));
-E_gamm = zeros(NumberOfSubjects,length(E_norm));
+E_EC50 = zeros(length(E_norm),NumberOfSubjects);
+E_gamm = zeros(length(E_norm),NumberOfSubjects);
 for i = 1:NumberOfSubjects
     patient_EC50 = EC50s(i);
     patient_gamma = Gammas(i);
-    E_EC50(i,:) = BASE + (E_max*c_e.^gamma)./(c_e.^gamma + patient_EC50^gamma); 
-    E_gamm(i,:) = BASE + (E_max*c_e.^patient_gamma)./(c_e.^patient_gamma + EC_50^patient_gamma); 
+    E_EC50(:,i) = BASE + (E_max*c_e.^gamma)./(c_e.^gamma + patient_EC50^gamma); 
+    E_gamm(:,i) = BASE + (E_max*c_e.^patient_gamma)./(c_e.^patient_gamma + EC_50^patient_gamma); 
 end
 
 save popPK_data.mat  AUC_central_arr1 AUC_central_arr2 AUC_central_arr3 ...
      AUC_central_arr4 AUC_central_arr5 AUC_peripheral_arr1 AUC_peripheral_arr2 ...
      AUC_peripheral_arr3 AUC_peripheral_arr4 AUC_peripheral_arr5 
  
-save popPD_data.mat E_norm E_EC50 E_gamm
+save popPD_data.mat T E_norm E_EC50 E_gamm
