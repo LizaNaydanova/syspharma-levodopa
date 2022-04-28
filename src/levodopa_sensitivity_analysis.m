@@ -61,7 +61,7 @@ switch Runcase
 
         for i = 1:length(p0names)
             for j = 1:length(p0names)
-                
+              
                 p.(p0names{i}) = p0.(p0names{i})*(1.0+ParamDelta);
                 p.(p0names{j})=p0.(p0names{j})*(1.0+ParamDelta);
                 
@@ -72,6 +72,10 @@ switch Runcase
                 sensi_var(i,j) = (var(Y(:,4))-variance(j))/variance(j) /(p.(p0names{i})-p0.(p0names{i}))/(p0.(p0names{i}));
             end
         end
+        figure()
+        heatmap(p0names,p0names,sensi_auc)
+        save local_bivariate_var.mat sensi_var
+        save local_bivariate_auc.mat sensi_auc
     %% Local univariate
     case 2
         sensi_auc = zeros(1,9);
@@ -81,7 +85,7 @@ switch Runcase
         
         auc0 = trapz(T,Y(:,4));
         p0 = p;
-        p0names = fieldnames(p);
+        p0names = fieldnames(p); 
 
         for i = 1:length(p0names)
             p.(p0names{i}) = p0.(p0names{i})*(1.0+ParamDelta);
@@ -93,25 +97,28 @@ switch Runcase
     %% Global Sensitivity of Effect Compartment Concentration Rsyn and Cl since those seem to relate to Parkinsons Disease
     case 3
 
-        Cl = linspace(0.1,1,100);
-        Rsyn = linspace(0.1,1,100);
+        Cl = logspace(-1,1,10);
+        Rsyn = logspace(-1,1,10);
 
 
-        auc = zeros(100,100);
-
+        auc = zeros(10,10);
+        variance = zeros(10,10);
         for i = 1:length(Cl)
+            i
             for j = 1:length(Rsyn)
                 p.R_SYN = Cl(i);
                 p.CL = Rsyn(j);
 
                 [Y,T] = ldopa_sim(200,2*60,4*60,p);
 
-                auc(i,j) = trapz(T,Y(:,4));
+                auc(i,j)      = trapz(T,Y(:,4));
+                variance(i,j) = var(Y(:,4));
             end
         end
-
-
-
+        figure()
+        heatmap(Cl,Rsyn,auc)
+        save global_sensitivity_AUC.mat Cl Rsyn auc
+        save global_sensitivity_var.mat Cl Rsyn variance
 end
 
 
