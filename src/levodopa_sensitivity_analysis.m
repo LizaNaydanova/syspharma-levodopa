@@ -22,7 +22,7 @@ p.inf = 5;        % units: mg/min Arbitrarily selected value
 % 5 - CL
 
 %%
-Runcase = 3 ;
+Runcase = 1 ;
 
 %% Local bivariate sensitivity AUC in Effect Compartment Concentration (mg/L) and sensitivity variability renderse L-Dopa ineffective
 switch Runcase
