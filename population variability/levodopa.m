@@ -1,5 +1,5 @@
 
-function [outAUC1,outAUC2] = levodopa(CL,Vc,Vp,Q, Dose); 
+function [outAUC1,outAUC2, out3] = levodopa(CL,Vc,Vp,Q, Dose); 
 
 %% Parameters
 
@@ -24,8 +24,8 @@ D0 = Dose;           % units: 200 mg  ###NOT SURE, PLEASE CONFIRM
 
 %% PEDAL study run
 
-post_bolus_interval = 4*60;   % units: min
-continuous_interval = 2*60;   % units: min
+post_bolus_interval = 0.5*60;   % units: min
+continuous_interval = 10*60;   % units: min
 
 % Post Morning Bolus Simulation
 start_time = 0;
@@ -41,16 +41,16 @@ Y=cat(1,Y,y(2:end,:));
 % Continuous Dose Simulation
 start_time = end_time;
 end_time = end_time + continuous_interval; 
-y0=y_prev; p.inf = 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
+y0=y_prev; p.inf =  1; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
 options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
 [t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
 %MassBalanceD1 = mass_balance(T2,Y2,y0,p);
 T=cat(1,T,t(2:end,:));
 Y=cat(1,Y,y(2:end,:));
 
-%% RETURN THE CALCULATED AUC VALUES
+%% RETURN THE CALCULATED AUC AND EFFECT VALUES
 
 outAUC1=trapz(T,Y(:,2)); % concentrations are mg/L so AUC units = mg/L*hr % Central
 outAUC2=trapz(T,Y(:,3)); % Peripheral
-
+out3=Y(:,4); % Concentration of Effect Compartment
 end

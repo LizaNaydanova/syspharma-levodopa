@@ -1,5 +1,5 @@
 
-function Assignment4Starter2022(NumberOfSubjects)
+function Assignment4Starter2022(NumberOfSubjects, mean_val,sd,cutoff,str)
 close all;
 
 %% Distribution Parameters 
@@ -7,9 +7,9 @@ close all;
 %   the code with small numbers that run quickly, and then run it with 
 %   larger populations once we're satisfied that it's working.
 
-meanwt = 75.4;
-sdwt = 11.3;
-cutoffwt = 30; % Minumum weight; set to 0 to only remove nonpositives
+meanwt = mean_val;
+sdwt = sd;
+cutoffwt = cutoff; % Minumum weight; set to 0 to only remove nonpositives
 
 %% PART ONE - GENERATE NORMAL DISTRIBUTION (for comparison only)
     
@@ -69,8 +69,8 @@ end
 % boxplot (xdist);
 % 
 patientID = (1:NumberOfSubjects)';
-Weights = xdist;
-save(strcat('WeightDistribs_',string(NumberOfSubjects),'.mat'),'patientID','Weights');
+Param_Val = xdist;
+save(strcat(str,string(NumberOfSubjects),'.mat'),'patientID','Param_Val');
 end
 
 
