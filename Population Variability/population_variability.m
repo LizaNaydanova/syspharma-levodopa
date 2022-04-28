@@ -53,25 +53,25 @@ AUC_peripheral_arr3 = zeros(NumberOfSubjects, 1);
 AUC_peripheral_arr4 = zeros(NumberOfSubjects, 1);
 AUC_peripheral_arr5 = zeros(NumberOfSubjects, 1);
 
-% for i = 1:NumberOfSubjects
-%     [AUC_central1,AUC_peripheral1] = levodopa(CL_samp(i),Vc,Vp,Q,D0);
-%     [AUC_central2,AUC_peripheral2] = levodopa(CL,Vc_samp(i),Vp,Q,D0);
-%     [AUC_central3,AUC_peripheral3] = levodopa(CL,Vc,Vp_samp(i),Q,D0);
-%     [AUC_central4,AUC_peripheral4] = levodopa(CL,Vc,Vp,Q_samp(i),D0);
-%     [AUC_central5,AUC_peripheral5] = levodopa(CL_samp(i),Vc_samp(i),Vp_samp(i),Q_samp(i),D0);
-%     
-%     AUC_central_arr1(i) = AUC_central1;
-%     AUC_central_arr2(i) = AUC_central2;
-%     AUC_central_arr3(i) = AUC_central3;
-%     AUC_central_arr4(i) = AUC_central4;
-%     AUC_central_arr5(i) = AUC_central5;
-%     AUC_peripheral_arr1(i) = AUC_peripheral1;
-%     AUC_peripheral_arr2(i) = AUC_peripheral2;
-%     AUC_peripheral_arr3(i) = AUC_peripheral3;
-%     AUC_peripheral_arr4(i) = AUC_peripheral4;
-%     AUC_peripheral_arr5(i) = AUC_peripheral5;
-%     
-% end
+for i = 1:NumberOfSubjects
+    [AUC_central1,AUC_peripheral1] = levodopa(CL_samp(i),Vc,Vp,Q,D0);
+    [AUC_central2,AUC_peripheral2] = levodopa(CL,Vc_samp(i),Vp,Q,D0);
+    [AUC_central3,AUC_peripheral3] = levodopa(CL,Vc,Vp_samp(i),Q,D0);
+    [AUC_central4,AUC_peripheral4] = levodopa(CL,Vc,Vp,Q_samp(i),D0);
+    [AUC_central5,AUC_peripheral5] = levodopa(CL_samp(i),Vc_samp(i),Vp_samp(i),Q_samp(i),D0);
+    
+    AUC_central_arr1(i) = AUC_central1;
+    AUC_central_arr2(i) = AUC_central2;
+    AUC_central_arr3(i) = AUC_central3;
+    AUC_central_arr4(i) = AUC_central4;
+    AUC_central_arr5(i) = AUC_central5;
+    AUC_peripheral_arr1(i) = AUC_peripheral1;
+    AUC_peripheral_arr2(i) = AUC_peripheral2;
+    AUC_peripheral_arr3(i) = AUC_peripheral3;
+    AUC_peripheral_arr4(i) = AUC_peripheral4;
+    AUC_peripheral_arr5(i) = AUC_peripheral5;
+    
+end
 
 
 %%%%% Part 2: Run the Levodopa Model on Simulated PopPD Parameters %%%%%
