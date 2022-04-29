@@ -18,64 +18,23 @@ p.inf = 0;        % units: mg/min
 
 %% Initial Conditions
 
-D0 = 400;           % units: mg  ###NOT SURE, PLEASE CONFIRM  
+D0 = 400;           % units: mg  ###NOT SURE, PLEASE CONFIRM 
 
+%% Timing of doses
 
-%% PEDAL study run
+% length of time when morning bolus dose is administered
+t_morning   = 0.5*60;                       % units: min
+% night time when pump is turned off (12 hrs for now)
+t_night     = 12*60;  % units: min
+% length of time that infusion pump is running during the day
+t_day       = 24*60 - t_morning - t_night;                      % units: min
 
-post_bolus_interval = 0.5*60;   % units: min
-continuous_interval = 10*60;   % units: min
+% number of days we will run the simulation for
+num_days = 7;
 
-start_time = 0;
-T=[0];
-% Post Morning Bolus Simulation
-end_time = start_time + post_bolus_interval; 
-Y=[D0, 0, 0, 0, 0]; 
-y0=Y; % Initial Conditions
-options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
-[t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
-%MassBalanceD1 = mass_balance(T2,Y2,y0,p);
-y_prev = y(end,:)';
-T=cat(1,T,t(2:end,:));
-Y=cat(1,Y,y(2:end,:));
+%% Simulation
 
-
-% Continuous Dose Simulation
-start_time = end_time;
-end_time = end_time + continuous_interval; 
-y0=y_prev; 
-p.inf =  2; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
-options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
-[t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
-y_prev = y(end,:)';
-%MassBalanceD1 = mass_balance(T2,Y2,y0,p);
-T=cat(1,T,t(2:end,:));
-Y=cat(1,Y,y(2:end,:));
-
-% Stop infusion for x minutes
-missed = 60;
-start_time = end_time;
-end_time = end_time + missed; 
-y0=y_prev;
-p.inf =  0; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
-options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
-[t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
-y_prev = y(end,:)';
-%MassBalanceD1 = mass_balance(T2,Y2,y0,p);
-T=cat(1,T,t(2:end,:));
-Y=cat(1,Y,y(2:end,:));
-
-% Continuous Dose Simulation
-start_time = end_time;
-end_time = end_time + continuous_interval - missed; 
-y0=y_prev; 
-p.inf =  2; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
-options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
-[t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
-y_prev = y(end,:)';
-%MassBalanceD1 = mass_balance(T2,Y2,y0,p);
-T=cat(1,T,t(2:end,:));
-Y=cat(1,Y,y(2:end,:));
+[T,Y] = missed_dose_normal(t_morning,t_day,t_night, num_days, D0, p );
 
 % Effect on a TRS scale
 c_e = Y(:,4);    % units: mg/L
