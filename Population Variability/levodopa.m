@@ -1,5 +1,5 @@
 
-function [outAUC1,outAUC2, out3, T] = levodopa(CL,Vc,Vp,Q, Dose); 
+function [outAUC1,outAUC2, out3, T] = levodopa(CL,Vc,Vp,Q, Dose) 
 
 %% Parameters
 

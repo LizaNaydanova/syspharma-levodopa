@@ -3,7 +3,7 @@ clear; clc;
 %% Parameters
 
 % Select method for virtual compartment
-%p.cleared = 'conc';
+% p.cleared = 'conc';
 
 p.V1 = 11;        % units: L
 p.V2 = 27;        % units: L
@@ -16,15 +16,25 @@ p.R_SYN = 0.01;   % units: mg/min
 p.inf = 0;        % units: mg/min   
 
 
+lev_simulate(p,200,1,'pkpd_normal_dose.mat')
+lev_simulate(p,400,2,'pkpd_double_dose.mat')
+lev_simulate(p,400,1,'pkpd_double_initial_dose.mat')
+lev_simulate(p,200,2,'pkpd_double_second_dose.mat')
+
+
+
+
+function [T, C_1, C_2, E] = lev_simulate(p,bolus_dose,cont_dose,save_file_name)
 %% Initial Conditions
 
-D0 = 400;           % units: mg  ###NOT SURE, PLEASE CONFIRM  
+D0 = bolus_dose;           % units: mg  ###NOT SURE, PLEASE CONFIRM  
 
 
 %% PEDAL study run
 
 post_bolus_interval = 0.5*60;   % units: min
 continuous_interval = 10*60;   % units: min
+p.inf = 0;        % units: mg/min 
 
 % Post Morning Bolus Simulation
 start_time = 0;
@@ -40,7 +50,7 @@ Y=cat(1,Y,y(2:end,:));
 % Continuous Dose Simulation
 start_time = end_time;
 end_time = end_time + continuous_interval; 
-y0=y_prev; p.inf =  2; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
+y0=y_prev; p.inf =  cont_dose; % 1.04;   % units: mg/min   1500 mg per day ###NOT SURE, PLEASE CONFIRM 
 options = odeset('MaxStep',5e-2, 'AbsTol', 1e-5,'RelTol', 1e-5,'InitialStep', 1e-2);
 [t,y] = ode45(@westin_etal_eqns_levodopa,(start_time:1:end_time),y0,options,p); % simulate model
 %MassBalanceD1 = mass_balance(T2,Y2,y0,p);
@@ -75,7 +85,9 @@ title('Effect')
 
 %% Saving Results
 C_1 = Y(:,2); C_2 = Y(:,3); 
-save pkpd_results.mat T C_1 C_2 E
+save(save_file_name,'T','C_1','C_2','E')
+
+end
 
 
 
