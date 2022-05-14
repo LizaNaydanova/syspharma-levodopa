@@ -71,11 +71,13 @@ plot1 <- ggplot(data = central, aes(x = Time, y = value, color = variable)) + ge
 
 plot2 <- ggplot(data = periph, aes(x = Time, y = value, color = variable)) + geom_line(size = 1.2) + 
   scale_color_brewer(palette = 'Dark2') + my_theme + 
-  labs(title = 'Levodopa Concentration in Peripheral Compartment v.s. Time', x = 'Time (min)', y = '[D] (mg/L)')
+  labs(title = 'Levodopa Concentration in Peripheral Compartment v.s. Time', x = 'Time (min)', y = '[D] (mg/L)') +
+  theme(text = element_text(size = 15), plot.title = element_text(size=20, hjust = 0.2),)
 
 plot3 <- ggplot(data = effect, aes(x = Time, y = value, color = variable)) + geom_line(size = 1.2) + 
   scale_color_brewer(palette = 'Dark2') + my_theme + 
-  labs(title = 'Levodopa Effect Level v.s. Time', x = 'Time (min)', y = 'Effect Level')
+  labs(title = 'Levodopa Effect Level v.s. Time', x = 'Time (min)', y = 'Effect Level') +
+  theme(text = element_text(size = 15), plot.title = element_text(size=20, hjust = 0.2),)
 
 # Save graphs
 ggsave(filename = 'plot1.png', plot = plot1, width = 8, height = 6)
@@ -123,8 +125,15 @@ ui <- fluidPage(
         ),
         selected = c("Double Bolus +\nDouble Maintenance\n", "Double Bolus +\nSingle Maintenance\n",
                "Single Bolus +\nDouble Maintenance\n","Single Bolus +\nSingle Maintenance\n")
-      ), 
-      br())),
+      )),
+      fluidRow(sliderInput(
+        inputId = "time",
+        label = "Set the maximum time for the plot:",
+        min = 0,
+        max = 630,
+        value = 630
+      ))
+      ),
       
     # Display the Plotly plot in the main panel
     mainPanel(
@@ -153,7 +162,7 @@ server <- function(input, output) {
           plot1 <- ggplot(data = central_filtered, aes(x = Time, y = value, color = variable)) + geom_line(size = 1.2) + 
             scale_color_brewer(palette = 'Dark2') + my_theme +
             labs(title = 'Levodopa Concentration in Central Compartment v.s. Time', x = 'Time (min)', y = '[D] (mg/L)') +
-            scale_y_continuous(limit = c(0,80))
+            scale_y_continuous(limit = c(0,80)) + coord_cartesian(xlim = c(0, input$time))
           # Convert ggplot to Plotly plot
           plotly_build(plot1)
           gp <- ggplotly(plot1) 
@@ -171,7 +180,7 @@ server <- function(input, output) {
           plot2 <- ggplot(data = periph_filtered, aes(x = Time, y = value, color = variable)) + geom_line(size = 1.2) + 
             scale_color_brewer(palette = 'Dark2') + my_theme + 
             labs(title = 'Levodopa Concentration in Peripheral Compartment v.s. Time', x = 'Time (min)', y = '[D] (mg/L)') +
-            scale_y_continuous(limit = c(0,120))
+            scale_y_continuous(limit = c(0,120)) + coord_cartesian(xlim = c(0, input$time))
           
           # Convert ggplot to Plotly plot
           plotly_build(plot2)
@@ -190,7 +199,7 @@ server <- function(input, output) {
           plot3 <- ggplot(data = effect_filtered, aes(x = Time, y = value, color = variable)) + geom_line(size = 1.2) + 
             scale_color_brewer(palette = 'Dark2') + my_theme + 
             labs(title = 'Levodopa Effect Level v.s. Time', x = 'Time (min)', y = 'Effect Level') + 
-            scale_y_continuous(limit = c(-1.5,1))
+            scale_y_continuous(limit = c(-1.5,1)) + coord_cartesian(xlim = c(0, input$time))
           # Convert ggplot to Plotly plot
           plotly_build(plot3)
           gp <- ggplotly(plot3) 
